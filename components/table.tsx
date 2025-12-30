@@ -1,0 +1,102 @@
+import { FC } from "react";
+import Button from "./button";
+import { Edit2, Trash2, CreditCard, ArrowUpDown } from "lucide-react";
+
+const headers = [
+  "สถานะ",
+  "ชื่อ-นามสกุล",
+  "ระดับ",
+  "เกมที่เล่น",
+  "การชำระเงิน",
+  "จัดการ",
+];
+
+const rows = [
+  {
+    id: 1,
+    status: "เช็คอิน",
+    name: "สมชาย ใจดี",
+    level: "กลาง",
+    games: 10,
+    payment: "ชำระแล้ว",
+  },
+  {
+    id: 2,
+    status: "เช็คอิน",
+    name: "มะลิ ตั้งใจ",
+    level: "เริ่มต้น",
+    games: 5,
+    payment: "ค้างชำระ",
+  },
+];
+
+interface ITableProps {
+  className?: string;
+  handleClickPayment: () => void;
+  handleClickEditPlayer: () => void;
+}
+
+const Table: FC<ITableProps> = ({
+  className,
+  handleClickPayment,
+  handleClickEditPlayer,
+}) => {
+  return (
+    <table
+      className={`table-auto w-full ${className} border border-1 border-slate-200 rounded-xl`}
+    >
+      <thead className="bg-[#EBFDF5]">
+        <tr>
+          {headers.map((header) => (
+            <th
+              key={header}
+              className="border-b border-slate-200 p-4 text-center align-middle font-medium"
+            >
+              {header}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr
+            key={row.id}
+            className="border-t border-slate-200 hover:bg-gray-50"
+          >
+            <td className="flex p-4 justify-center">
+              <button className="border border-slate-500 p-2 border-gray-100 rounded-md flex flex-row items-center gap-2  text-gray-600 hover:bg-gray-300 cursor-pointer">
+                <div className="rounded-full border border-1 p-2 w-2 h-2"></div>
+                <span>{row.status}</span>
+              </button>
+            </td>
+            <td className="p-4 text-center align-middle">{row.name}</td>
+            <td className="p-4 text-center align-middle">{row.level}</td>
+            <td className="p-4 text-center align-middle">{row.games}</td>
+            <td className="p-4 text-center align-middle">{row.payment}</td>
+            <td className="p-4 text-center flex justify-center align-middle flex gap-2">
+              <button
+                className="cursor-pointer p-1 hover:bg-[#EBFDF5] rounded-md"
+                onClick={handleClickPayment}
+              >
+                <CreditCard className="text-[#007A55] hover:text-[#000]" />
+              </button>
+
+              <button
+                className="cursor-pointer p-1 hover:bg-[#DDE6FF] rounded-md"
+                onClick={handleClickEditPlayer}
+              >
+                <Edit2 className="text-[#5375EE] hover:text-[#000]" />
+              </button>
+
+              <button className="cursor-pointer p-1 hover:bg-[#FAD1D1] rounded-md">
+                <Trash2 className="text-[#E7000B] hover:text-[#000]" />
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};
+
+export default Table;

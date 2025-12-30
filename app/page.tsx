@@ -1,65 +1,118 @@
+"use client";
+
+import Button from "@/components/button";
+import Card from "@/components/card";
+import EditPlayerModal from "@/components/modals/editPlayerModal";
+import { ImportPlayerModal } from "@/components/modals/importPlayerModal";
+import PaymentModal from "@/components/modals/paymentModal";
+import RandomPlayerModal from "@/components/modals/randomPlayerModal";
+import SettingModal from "@/components/modals/settingModal";
+import Table from "@/components/table";
+import TableMobile from "@/components/tableMobile";
+import { TextInput } from "@/components/textInput";
+import { Settings, Shuffle, UserPlus } from "lucide-react";
 import Image from "next/image";
+import { title } from "process";
+import { useState } from "react";
+
+const cards = [
+  { title: "Total Players", total: 120 },
+  { title: "Present", total: 85 },
+  { title: "Paid", total: 15 },
+  { title: "Unpaid", total: 3 },
+  { title: "Courts", total: 10 },
+];
 
 export default function Home() {
+  const [isImportModalPlayerOpen, setIsImportModalPlayerOpen] =
+    useState<boolean>(false);
+  const [isSettingModalOpen, setIsSettingModalOpen] = useState<boolean>(false);
+  const [isRandomPlayerModalOpen, setIsRandomPlayerModalOpen] =
+    useState<boolean>(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
+  const [isEditPlayerModalOpen, setIsEditPlayerModalOpen] =
+    useState<boolean>(false);
+
+  const handleClickPayment = () => {
+    setIsPaymentModalOpen(true);
+  };
+
+  const handleClickEditPlayer = () => {
+    setIsEditPlayerModalOpen(true);
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <>
+      <div className="flex flex-col gap-8">
+        <header className="bg-[#1C2638] w-screen top-0 shadow-xl p-8">
+          <div className="max-w-7xl mx-auto flex justify-between items-center flex-wrap gap-4">
+            <span className="text-white">Badminton</span>
+            <div className="flex justify-start gap-2">
+              <Button
+                text="Import"
+                Icon={UserPlus}
+                onClick={() => setIsImportModalPlayerOpen((prev) => !prev)}
+              />
+              <Button
+                text="Setting"
+                Icon={Settings}
+                onClick={() => setIsSettingModalOpen((prev) => !prev)}
+              />
+              <Button
+                text="Random"
+                Icon={Shuffle}
+                onClick={() => setIsRandomPlayerModalOpen((prev) => !prev)}
+              />
+            </div>
+          </div>
+        </header>
+        <main className="">
+          <div className="max-w-7xl mx-auto flex flex-col gap-6">
+            <div className="flex justify-center h-[56px]">
+              <TextInput className="w-[50%]" />
+            </div>
+            <section className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8 justify-stretch">
+              {cards.map(({ title, total }) => (
+                <Card key={title} title={title} total={total} />
+              ))}
+            </section>
+            {/* Table Section */}
+            <Table
+              className="hidden lg:table"
+              handleClickPayment={handleClickPayment}
+              handleClickEditPlayer={handleClickEditPlayer}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            <TableMobile className="block lg:hidden" />
+          </div>
+        </main>
+      </div>
+
+      <ImportPlayerModal
+        open={isImportModalPlayerOpen}
+        onCancel={() => {
+          setIsImportModalPlayerOpen(false);
+        }}
+      />
+
+      <SettingModal
+        open={isSettingModalOpen}
+        onCancel={() => setIsSettingModalOpen(false)}
+      />
+
+      <RandomPlayerModal
+        open={isRandomPlayerModalOpen}
+        onClose={() => setIsRandomPlayerModalOpen(false)}
+      />
+
+      <PaymentModal
+        open={isPaymentModalOpen}
+        onCancel={() => setIsPaymentModalOpen(false)}
+      />
+
+      <EditPlayerModal
+        open={isEditPlayerModalOpen}
+        onCancel={() => setIsEditPlayerModalOpen(false)}
+      />
+    </>
   );
 }
