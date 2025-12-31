@@ -38,7 +38,7 @@ const SettingModal: FC<ISettingModalProps> = ({ open = false, onCancel }) => {
       open={open}
       onCancel={onCancel}
       footer={footer()}
-      className="max-h-[80vh] overflow-x-auto"
+      className="overflow-y-auto"
     >
       <Form
         layout="vertical"

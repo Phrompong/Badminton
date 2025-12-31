@@ -13,7 +13,7 @@ import { TextInput } from "@/components/textInput";
 import { Settings, Shuffle, UserPlus } from "lucide-react";
 import Image from "next/image";
 import { title } from "process";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const cards = [
   { title: "Total Players", total: 120 },
@@ -21,6 +21,25 @@ const cards = [
   { title: "Paid", total: 15 },
   { title: "Unpaid", total: 3 },
   { title: "Courts", total: 10 },
+];
+
+const data = [
+  {
+    id: 1,
+    status: "เช็คอิน",
+    name: "สมชาย ใจดี",
+    level: "กลาง",
+    games: 10,
+    payment: "ชำระแล้ว",
+  },
+  {
+    id: 2,
+    status: "เช็คอิน",
+    name: "มะลิ ตั้งใจ",
+    level: "เริ่มต้น",
+    games: 5,
+    payment: "ค้างชำระ",
+  },
 ];
 
 export default function Home() {
@@ -66,8 +85,8 @@ export default function Home() {
             </div>
           </div>
         </header>
-        <main className="">
-          <div className="max-w-7xl mx-auto flex flex-col gap-6">
+        <main className="p-1">
+          <div className="max-w-7xl mx-20 mx-auto flex flex-col gap-6">
             <div className="flex justify-center h-[56px]">
               <TextInput className="w-[50%]" />
             </div>
@@ -78,11 +97,17 @@ export default function Home() {
             </section>
             {/* Table Section */}
             <Table
+              data={data}
               className="hidden lg:table"
               handleClickPayment={handleClickPayment}
               handleClickEditPlayer={handleClickEditPlayer}
             />
-            <TableMobile className="block lg:hidden" />
+            <TableMobile
+              data={data}
+              className="block lg:hidden"
+              handleClickPayment={handleClickPayment}
+              handleClickEditPlayer={handleClickEditPlayer}
+            />
           </div>
         </main>
       </div>

@@ -34,9 +34,11 @@ interface ITableProps {
   className?: string;
   handleClickPayment: () => void;
   handleClickEditPlayer: () => void;
+  data: any[];
 }
 
 const Table: FC<ITableProps> = ({
+  data,
   className,
   handleClickPayment,
   handleClickEditPlayer,
@@ -58,7 +60,7 @@ const Table: FC<ITableProps> = ({
         </tr>
       </thead>
       <tbody>
-        {rows.map((row) => (
+        {data.map((row) => (
           <tr
             key={row.id}
             className="border-t border-slate-200 hover:bg-gray-50"

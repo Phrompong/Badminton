@@ -33,7 +33,7 @@ const RandomPlayerModal: FC<IRandomPlayerModalProps> = ({ open, onClose }) => {
       open={open}
       onCancel={onClose}
       width={720}
-      className="max-h-[80vh] overflow-x-auto"
+      className="overflow-y-auto"
     >
       <div className="flex flex-col mt-4">
         {/* Card */}
