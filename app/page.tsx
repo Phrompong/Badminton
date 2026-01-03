@@ -17,9 +17,7 @@ import { useEffect, useState } from "react";
 import { createUser, getUsers } from "./actions/user";
 import { useSearchParams } from "next/navigation";
 import Session from "./pages/session";
-import HomePage from "./pages/main";
 import Main from "./pages/main";
-import SessionModal from "@/components/modals/sessionFormModal";
 
 const data = [
   {
@@ -50,17 +48,6 @@ export default function Page() {
   const [isSettingModalOpen, setIsSettingModalOpen] = useState<boolean>(false);
   const [isRandomPlayerModalOpen, setIsRandomPlayerModalOpen] =
     useState<boolean>(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
-  const [isEditPlayerModalOpen, setIsEditPlayerModalOpen] =
-    useState<boolean>(false);
-
-  const handleClickPayment = () => {
-    setIsPaymentModalOpen(true);
-  };
-
-  const handleClickEditPlayer = () => {
-    setIsEditPlayerModalOpen(true);
-  };
 
   useEffect(() => {}, []);
 
@@ -111,16 +98,6 @@ export default function Page() {
       <RandomPlayerModal
         open={isRandomPlayerModalOpen}
         onClose={() => setIsRandomPlayerModalOpen(false)}
-      />
-
-      <PaymentModal
-        open={isPaymentModalOpen}
-        onCancel={() => setIsPaymentModalOpen(false)}
-      />
-
-      <EditPlayerModal
-        open={isEditPlayerModalOpen}
-        onCancel={() => setIsEditPlayerModalOpen(false)}
       />
     </>
   );

@@ -68,13 +68,15 @@ const Table: FC<ITableProps> = ({
             <td className="flex p-4 justify-center">
               <button className="border border-slate-500 p-2 border-gray-100 rounded-md flex flex-row items-center gap-2  text-gray-600 hover:bg-gray-300 cursor-pointer">
                 <div className="rounded-full border border-1 p-2 w-2 h-2"></div>
-                <span>{row.status}</span>
+                <span>{row.isOnline ? "เช็คอิน" : "ไม่เช็คอิน"}</span>
               </button>
             </td>
             <td className="p-4 text-center align-middle">{row.name}</td>
             <td className="p-4 text-center align-middle">{row.level}</td>
             <td className="p-4 text-center align-middle">{row.games}</td>
-            <td className="p-4 text-center align-middle">{row.payment}</td>
+            <td className="p-4 text-center align-middle">
+              {row.isPaid ? "ชำระแล้ว" : "ค้างชำระ"}
+            </td>
             <td className="p-4 text-center flex justify-center align-middle flex gap-2">
               <button
                 className="cursor-pointer p-1 hover:bg-[#EBFDF5] rounded-md"

@@ -1,4 +1,6 @@
-'use client";';
+"use client";
+import type { CreateSessionInput } from "@/app/actions/models/session.model";
+import { createSession } from "@/app/actions/session";
 import {
   DatePicker,
   Divider,
@@ -8,6 +10,8 @@ import {
   Modal,
   TimePicker,
 } from "antd";
+import type { Dayjs } from "dayjs";
+import { message } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const title = () => {
@@ -46,6 +50,16 @@ const footer = (form: FormInstance, onCancel: () => void) => {
 
 const formItemStyle = { marginBottom: 16 };
 
+type SessionFormValues = {
+  name: string;
+  date: Dayjs;
+  time?: Dayjs;
+  location?: string;
+  playerCount?: number | string;
+  courtCount?: number | string;
+  roomCode: string;
+};
+
 interface ISessionModalProps {
   open: boolean;
   onCancel: () => void;
@@ -56,11 +70,41 @@ const SessionModal = ({ open, onCancel }: ISessionModalProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const handleSubmitForm = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("code", "xxxx");
+  const handleSubmitForm = async (value: SessionFormValues) => {
+    try {
+      const startAt = value.date
+        .hour(value.time?.hour() ?? 0)
+        .minute(value.time?.minute() ?? 0)
+        .second(value.time?.second() ?? 0)
+        .millisecond(0)
+        .toISOString();
 
-    router.replace(`?${params.toString()}`);
+      const payload: CreateSessionInput = {
+        name: value.name.trim(),
+        startAt,
+        location: value.location?.trim() || null,
+        playerCount:
+          value.playerCount === undefined || value.playerCount === null
+            ? 0
+            : Number(value.playerCount),
+        courtCount: Number(value.courtCount),
+        roomCode: value.roomCode.trim(),
+      };
+
+      await createSession(payload);
+
+      message.success("สร้างเซสชันสำเร็จ");
+
+      setTimeout(() => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("code", payload.roomCode);
+        router.replace(`?${params.toString()}`);
+        onCancel?.();
+      }, 1000);
+    } catch (error) {
+      message.error("เกิดข้อผิดพลาดในการสร้างเซสชัน กรุณาลองใหม่อีกครั้ง");
+      return;
+    }
   };
 
   return (
@@ -77,57 +121,73 @@ const SessionModal = ({ open, onCancel }: ISessionModalProps) => {
           <div className="flex flex-col gap-4">
             <div className="flex flex-col">
               <Form.Item<string>
-                label="ชื่อเซสชัน"
-                name="sessionName"
+                label="ชื่อก๊วน"
+                name="name"
                 style={formItemStyle}
+                rules={[{ required: true, message: "กรุณากรอกชื่อเซสชัน" }]}
               >
-                <Input />
+                <Input placeholder="เช่น เช้าวันเสาร์" />
               </Form.Item>
               <div className="flex gap-2">
-                <Form.Item<string>
+                <Form.Item
                   label="วันที่"
                   name="date"
                   className="w-full"
                   style={formItemStyle}
+                  rules={[{ required: true, message: "กรุณาเลือกวันที่" }]}
                 >
-                  <DatePicker className="w-full" />
+                  <DatePicker className="w-full" placeholder="เลือกวันที่" />
                 </Form.Item>
 
-                <Form.Item<string>
+                <Form.Item
                   label="เวลา"
                   name="time"
                   className="w-full"
                   style={formItemStyle}
+                  rules={[{ required: true, message: "กรุณาเลือกเวลา" }]}
                 >
-                  <TimePicker className="w-full" />
+                  <TimePicker className="w-full" placeholder="เลือกเวลา" />
                 </Form.Item>
               </div>
 
               <Form.Item<string>
                 label="สถานีที่"
-                name="station"
+                name="location"
                 style={formItemStyle}
+                rules={[{ required: true, message: "กรุณากรอกสถานที่" }]}
               >
-                <Input />
+                <Input placeholder="เช่น สนาม A หรือ สถานี 1" />
               </Form.Item>
 
               <div className="flex gap-2">
-                <Form.Item<string>
+                <Form.Item<number>
                   label="จำนวนผู้เล่น"
-                  name="date"
+                  name="playerCount"
                   className="w-full"
                   style={formItemStyle}
+                  rules={[{ required: true, message: "กรุณากรอกจำนวนผู้เล่น" }]}
                 >
-                  <Input className="w-full" />
+                  <Input
+                    type="number"
+                    min={0}
+                    className="w-full"
+                    placeholder="เช่น 16"
+                  />
                 </Form.Item>
 
-                <Form.Item<string>
+                <Form.Item<number>
                   label="จำนวนสนาม"
-                  name="time"
+                  name="courtCount"
                   className="w-full"
                   style={formItemStyle}
+                  rules={[{ required: true, message: "กรุณากรอกจำนวนสนาม" }]}
                 >
-                  <Input className="w-full" />
+                  <Input
+                    type="number"
+                    min={0}
+                    className="w-full"
+                    placeholder="เช่น 4"
+                  />
                 </Form.Item>
               </div>
 
@@ -135,8 +195,9 @@ const SessionModal = ({ open, onCancel }: ISessionModalProps) => {
                 label="Room Code"
                 name="roomCode"
                 style={formItemStyle}
+                rules={[{ required: true, message: "กรุณากรอก Room Code" }]}
               >
-                <Input />
+                <Input placeholder="เช่น BDM-1234" />
               </Form.Item>
             </div>
           </div>

@@ -1,0 +1,49 @@
+"use server";
+
+import { prisma } from "@/lib/prisma";
+
+export async function createPlayer(
+  params: {
+    sessionId: string;
+    name: string;
+    level: string;
+  }[]
+) {
+  try {
+    const actorId = "00000000-0000-0000-0000-000000000000";
+
+    const objs = params.map((param) => ({
+      sessionId: param.sessionId,
+      name: param.name,
+      level: param.level,
+      isOnline: false,
+      isPaid: false,
+      isActive: true,
+      createdDate: new Date(),
+      updatedDate: new Date(),
+      createdBy: actorId,
+      updatedBy: actorId,
+    }));
+
+    const result = await prisma.player.createMany({
+      data: objs,
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Error creating player:", error);
+    throw error;
+  }
+}
+
+export async function getPlayersBySessionId(sessionId: string) {
+  return await prisma.player.findMany({
+    where: {
+      sessionId,
+      isActive: true,
+    },
+    orderBy: {
+      createdDate: "asc",
+    },
+  });
+}
