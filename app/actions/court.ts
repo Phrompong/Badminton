@@ -50,9 +50,8 @@ export async function getCourtAvailableBySessionId(sessionId: string) {
 }
 
 export async function removeCourt(courtId: string) {
-  return await prisma.court.update({
+  return await prisma.court.delete({
     where: { id: courtId },
-    data: { isAvailable: false, isDeleted: true },
   });
 }
 

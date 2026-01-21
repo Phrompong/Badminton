@@ -133,11 +133,17 @@ const RandomPlayerModal: FC<IRandomPlayerModalProps> = ({ open, onClose }) => {
       return;
     }
 
+    console.log("playerReady", playerReady.length);
+    console.log("courtAvailable", courtAvailable.length);
+
     await random(playerReady, courtAvailable);
-    setIsRandom(true);
 
     // * อัพเดทสถานะการสุ่มใน session
     await updateIsRandomSession(session.roomCode);
+
+    setTimeout(() => {
+      setIsRandom(true);
+    }, 1000);
   };
 
   return (
