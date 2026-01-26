@@ -159,3 +159,20 @@ export async function updatePlayerName(playerId: string, name: string) {
     throw error;
   }
 }
+
+export async function removePlayer(playerId: string) {
+  try {
+    return await prisma.player.update({
+      where: {
+        id: playerId,
+      },
+      data: {
+        isActive: false,
+        updatedDate: new Date(),
+      },
+    });
+  } catch (error) {
+    console.error("Error removing player:", error);
+    throw error;
+  }
+}

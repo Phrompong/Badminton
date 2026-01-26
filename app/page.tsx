@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Session from "./pages/session";
 import Main from "./pages/main";
+import ConfirmModal from "@/components/modals/confirmModal";
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -26,6 +27,7 @@ export default function Page() {
   const [isSettingModalOpen, setIsSettingModalOpen] = useState<boolean>(false);
   const [isRandomPlayerModalOpen, setIsRandomPlayerModalOpen] =
     useState<boolean>(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState<boolean>(false);
   const [refresh, setRefresh] = useState<number>(0);
 
   useEffect(() => {}, []);

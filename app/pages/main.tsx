@@ -13,7 +13,12 @@ import TableMobile from "@/components/tableMobile";
 import PaymentModal from "@/components/modals/paymentModal";
 import EditPlayerModal from "@/components/modals/editPlayerModal";
 import { copyText } from "@/utils/general";
-import { getPlayersBySessionId, updateOnlineStatus } from "../actions/player";
+import {
+  getPlayersBySessionId,
+  removePlayer,
+  updateOnlineStatus,
+} from "../actions/player";
+import ConfirmModal from "@/components/modals/confirmModal";
 
 interface IMainProps {
   refresh?: number;
@@ -28,6 +33,8 @@ const Main: FC<IMainProps> = ({ refresh }) => {
   const [cardData, setCardData] = useState<any[]>();
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
   const [isEditPlayerModalOpen, setIsEditPlayerModalOpen] =
+    useState<boolean>(false);
+  const [isRemovePlayerModalOpen, setIsRemovePlayerModalOpen] =
     useState<boolean>(false);
   const [refreshTicket, setRefreshTicket] = useState<number>(0);
   const [playerId, setPlayerId] = useState<string>("");
@@ -76,6 +83,18 @@ const Main: FC<IMainProps> = ({ refresh }) => {
   const handleClickEditPlayer = (playerId: string) => {
     setPlayerId(playerId);
     setIsEditPlayerModalOpen(true);
+  };
+
+  const handleClickRemovePlayer = (playerId: string) => {
+    setPlayerId(playerId);
+    setIsRemovePlayerModalOpen(true);
+  };
+
+  const handleConfirmRemovePlayer = () => {
+    removePlayer(playerId);
+    setIsRemovePlayerModalOpen(false);
+
+    message.success("ทำการลบผู้เล่นเรียบร้อยแล้ว");
   };
 
   const handleCopyRoomCode = async (roomCode: string) => {
@@ -137,6 +156,7 @@ const Main: FC<IMainProps> = ({ refresh }) => {
             handleUpdateOnlineStatus={handleUpdateOnlineStatus}
             handleClickPayment={handleClickPayment}
             handleClickEditPlayer={handleClickEditPlayer}
+            handleClickRemovePlayer={handleClickRemovePlayer}
           />
           <TableMobile
             data={playersData}
@@ -156,6 +176,14 @@ const Main: FC<IMainProps> = ({ refresh }) => {
             open={isEditPlayerModalOpen}
             onCancel={() => setIsEditPlayerModalOpen(false)}
           />
+
+          <ConfirmModal
+            isOpenModal={isRemovePlayerModalOpen}
+            handleConfirm={handleConfirmRemovePlayer}
+            handleCancel={() => setIsRemovePlayerModalOpen(false)}
+          >
+            <span>คุณต้องการลบผู้เล่นนี้ใช่หรือไม่?</span>
+          </ConfirmModal>
         </>
       )}
     </>

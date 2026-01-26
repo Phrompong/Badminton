@@ -35,6 +35,7 @@ interface ITableProps {
   handleUpdateOnlineStatus: (playerId: string, isOnline: boolean) => void;
   handleClickPayment: (playerId: string) => void;
   handleClickEditPlayer: (playerId: string) => void;
+  handleClickRemovePlayer: (playerId: string) => void;
   data: any[];
 }
 
@@ -44,6 +45,7 @@ const Table: FC<ITableProps> = ({
   handleClickPayment,
   handleClickEditPlayer,
   handleUpdateOnlineStatus,
+  handleClickRemovePlayer,
 }) => {
   return (
     <table
@@ -112,7 +114,10 @@ const Table: FC<ITableProps> = ({
                 <Edit2 className="text-[#5375EE] hover:text-[#000]" />
               </button>
 
-              <button className="cursor-pointer p-1 hover:bg-[#FAD1D1] rounded-md">
+              <button
+                className="cursor-pointer p-1 hover:bg-[#FAD1D1] rounded-md"
+                onClick={() => handleClickRemovePlayer(row.id)}
+              >
                 <Trash2 className="text-[#E7000B] hover:text-[#000]" />
               </button>
             </td>
