@@ -33,8 +33,8 @@ const rows = [
 interface ITableProps {
   className?: string;
   handleUpdateOnlineStatus: (playerId: string, isOnline: boolean) => void;
-  handleClickPayment: () => void;
-  handleClickEditPlayer: () => void;
+  handleClickPayment: (playerId: string) => void;
+  handleClickEditPlayer: (playerId: string) => void;
   data: any[];
 }
 
@@ -100,14 +100,14 @@ const Table: FC<ITableProps> = ({
             <td className="p-4 text-center flex justify-center align-middle flex gap-2">
               <button
                 className="cursor-pointer p-1 hover:bg-[#EBFDF5] rounded-md"
-                onClick={handleClickPayment}
+                onClick={() => handleClickPayment(row.id)}
               >
                 <CreditCard className="text-[#007A55] hover:text-[#000]" />
               </button>
 
               <button
                 className="cursor-pointer p-1 hover:bg-[#DDE6FF] rounded-md"
-                onClick={handleClickEditPlayer}
+                onClick={() => handleClickEditPlayer(row.id)}
               >
                 <Edit2 className="text-[#5375EE] hover:text-[#000]" />
               </button>

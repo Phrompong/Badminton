@@ -1,5 +1,5 @@
 "use client";
-import { getAllPlayers } from "@/app/actions/player";
+import { getAllPlayers, updatePlayStatus } from "@/app/actions/player";
 import {
   getSessionByRoomCode,
   updateIsRandomSession,
@@ -14,7 +14,7 @@ import {
   createTransactionRandom,
   getTransactionRandom,
 } from "@/app/actions/transactionRandom";
-import { getCourtAvailable, patchIsAvailableCourt } from "@/app/actions/court";
+import { getCourtAvailable, patchUnavailableCourt } from "@/app/actions/court";
 import _ from "lodash";
 
 interface IRandomPlayerModalProps {
@@ -80,7 +80,12 @@ const RandomPlayerModal: FC<IRandomPlayerModalProps> = ({ open, onClose }) => {
 
         await createTransactionRandom([bodyTransactionRandom]);
 
-        await patchIsAvailableCourt(itemRandom.courtId);
+        await patchUnavailableCourt(itemRandom.courtId);
+
+        await updatePlayStatus(itemRandom.teamA[0].id, true);
+        await updatePlayStatus(itemRandom.teamA[1].id, true);
+        await updatePlayStatus(itemRandom.teamB[0].id, true);
+        await updatePlayStatus(itemRandom.teamB[1].id, true);
       }
     };
 
@@ -141,7 +146,7 @@ const RandomPlayerModal: FC<IRandomPlayerModalProps> = ({ open, onClose }) => {
     // * อัพเดทสถานะการสุ่มใน session
     await updateIsRandomSession(session.roomCode);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       setIsRandom(true);
     }, 1000);
   };

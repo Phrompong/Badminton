@@ -41,7 +41,6 @@ export async function getCourtAvailableBySessionId(sessionId: string) {
   return await prisma.court.findMany({
     where: {
       sessionId,
-      isAvailable: true,
     },
     orderBy: {
       no: "asc",
@@ -62,9 +61,9 @@ export async function patchNameCourt(courtId: string, courtName: string) {
   });
 }
 
-export async function patchIsAvailableCourt(courtId: string) {
+export async function patchUnavailableCourt(courtId: string) {
   return await prisma.court.update({
     where: { id: courtId },
-    data: { isAvailable: true },
+    data: { isAvailable: false },
   });
 }

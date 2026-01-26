@@ -19,7 +19,7 @@ import { useSearchParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import ConfirmModal from "../confirmModal";
 import { v4 as uuidv4 } from "uuid";
-import { getCourtAvailable } from "@/app/actions/court";
+import { getCourtAvailable, patchUnavailableCourt } from "@/app/actions/court";
 
 interface IRandom {
   session: any;
@@ -243,6 +243,40 @@ const Random: FC<IRandom> = ({ session }) => {
     setIsOpenModal(false);
   };
 
+  useEffect(() => {
+    const init = async () => {
+      if (dataItems.length === 0) return;
+
+      for (const itemRandom of dataItems) {
+        if (itemRandom.courtId) {
+          const bodyTransactionRandom = {
+            sessionId: session!.id,
+            courtId: itemRandom.courtId,
+            createdDate: new Date(),
+            createdBy: "00000000-0000-0000-0000-000000000000",
+            updatedDate: new Date(),
+            updatedBy: "00000000-0000-0000-0000-000000000000",
+            playerId_A1: itemRandom.teamA[0].id,
+            playerId_A2: itemRandom.teamA[1].id,
+            playerId_B3: itemRandom.teamB[0].id,
+            playerId_B4: itemRandom.teamB[1].id,
+          };
+
+          await createTransactionRandom([bodyTransactionRandom]);
+
+          await patchUnavailableCourt(itemRandom.courtId);
+
+          await updatePlayStatus(itemRandom.teamA[0].id, true);
+          await updatePlayStatus(itemRandom.teamA[1].id, true);
+          await updatePlayStatus(itemRandom.teamB[0].id, true);
+          await updatePlayStatus(itemRandom.teamB[1].id, true);
+        }
+      }
+    };
+
+    init();
+  }, [dataItems]);
+
   const random = async (players: any[], courts: any[]) => {
     let results: any[] = [];
 
@@ -275,7 +309,7 @@ const Random: FC<IRandom> = ({ session }) => {
   const handleClickNewCourt = async () => {
     const playerReady = await getAllOnlinePlayers(session.id);
 
-    if (playerReady.length === 0) return;
+    if (playerReady.length === 0 || playerReady.length < 4) return;
 
     const courtAvailable = await getCourtAvailable(roomCode);
 

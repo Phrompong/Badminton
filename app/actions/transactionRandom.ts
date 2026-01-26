@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import type { ResponsePlayerCountInSession } from "./models/transactionRandom.model";
 
 export async function createTransactionRandom(params: any[]) {
   try {
@@ -150,4 +151,30 @@ export async function checkPlayerInActiveCourt(courtId: string) {
       isEndGame: false,
     },
   });
+}
+
+export async function getPlayerCountInSession(
+  playerId: string,
+): Promise<ResponsePlayerCountInSession> {
+  const playerInformation = await prisma.player.findFirst({
+    where: { id: playerId },
+  });
+
+  const countTransaction = await prisma.transaction_Random.count({
+    where: {
+      sessionId: playerInformation?.sessionId,
+      isEndGame: true,
+      OR: [
+        { playerId_A1: playerId },
+        { playerId_A2: playerId },
+        { playerId_B3: playerId },
+        { playerId_B4: playerId },
+      ],
+    },
+  });
+
+  return {
+    playerInformation,
+    countTransaction,
+  };
 }

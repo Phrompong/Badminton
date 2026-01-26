@@ -30,6 +30,7 @@ const Main: FC<IMainProps> = ({ refresh }) => {
   const [isEditPlayerModalOpen, setIsEditPlayerModalOpen] =
     useState<boolean>(false);
   const [refreshTicket, setRefreshTicket] = useState<number>(0);
+  const [playerId, setPlayerId] = useState<string>("");
 
   const initSession = async (code: string) => {
     const session = await getSessionByRoomCode(code);
@@ -61,17 +62,19 @@ const Main: FC<IMainProps> = ({ refresh }) => {
 
   const handleUpdateOnlineStatus = async (
     playerId: string,
-    isOnline: boolean
+    isOnline: boolean,
   ) => {
     await updateOnlineStatus(playerId, isOnline);
     setRefreshTicket((prev) => prev + 1);
   };
 
-  const handleClickPayment = () => {
+  const handleClickPayment = (playerId: string) => {
+    setPlayerId(playerId);
     setIsPaymentModalOpen(true);
   };
 
-  const handleClickEditPlayer = () => {
+  const handleClickEditPlayer = (playerId: string) => {
+    setPlayerId(playerId);
     setIsEditPlayerModalOpen(true);
   };
 
@@ -143,11 +146,13 @@ const Main: FC<IMainProps> = ({ refresh }) => {
           />
 
           <PaymentModal
+            playerId={playerId}
             open={isPaymentModalOpen}
             onCancel={() => setIsPaymentModalOpen(false)}
           />
 
           <EditPlayerModal
+            playerId={playerId}
             open={isEditPlayerModalOpen}
             onCancel={() => setIsEditPlayerModalOpen(false)}
           />

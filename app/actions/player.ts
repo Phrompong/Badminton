@@ -7,7 +7,7 @@ export async function createPlayer(
     sessionId: string;
     name: string;
     level: string;
-  }[]
+  }[],
 ) {
   try {
     const actorId = "00000000-0000-0000-0000-000000000000";
@@ -113,6 +113,49 @@ export async function updatePlayStatus(playerId: string, isPlaying: boolean) {
     });
   } catch (error) {
     console.error("Error updating play status:", error);
+    throw error;
+  }
+}
+
+export async function updateIsPaidStatus(playerId: string, isPaid: boolean) {
+  try {
+    return await prisma.player.update({
+      where: {
+        id: playerId,
+      },
+      data: {
+        isPaid,
+        updatedDate: new Date(),
+      },
+    });
+  } catch (error) {
+    console.error("Error updating isPaid status:", error);
+    throw error;
+  }
+}
+
+export async function getPlayerById(playerId: string) {
+  console.log("playerId:", playerId);
+  return await prisma.player.findFirst({
+    where: {
+      id: playerId,
+    },
+  });
+}
+
+export async function updatePlayerName(playerId: string, name: string) {
+  try {
+    return await prisma.player.update({
+      where: {
+        id: playerId,
+      },
+      data: {
+        name,
+        updatedDate: new Date(),
+      },
+    });
+  } catch (error) {
+    console.error("Error updating player name:", error);
     throw error;
   }
 }
