@@ -54,13 +54,15 @@ const EditPlayerModal: FC<IEditPlayerModalProps> = ({
   const [playerInformation, setPlayerInformation] = useState<any>(null);
 
   const init = async () => {
+    if (!playerId) return;
     setPlayerInformation(await getPlayerById(playerId));
   };
 
   useEffect(() => {
     setPlayerInformation(null);
+    if (!open) return;
     init();
-  }, [open]);
+  }, [open, playerId]);
 
   if (!playerInformation) return null;
 

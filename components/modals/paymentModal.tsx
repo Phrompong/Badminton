@@ -45,6 +45,7 @@ const PaymentModal: React.FC<IPaymentModalProps> = ({
   };
 
   useEffect(() => {
+    if (!open) return;
     init();
   }, [open]);
 

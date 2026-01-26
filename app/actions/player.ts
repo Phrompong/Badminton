@@ -135,7 +135,9 @@ export async function updateIsPaidStatus(playerId: string, isPaid: boolean) {
 }
 
 export async function getPlayerById(playerId: string) {
-  console.log("playerId:", playerId);
+  if (!playerId) {
+    return null;
+  }
   return await prisma.player.findFirst({
     where: {
       id: playerId,

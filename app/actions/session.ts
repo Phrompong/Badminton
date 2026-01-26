@@ -53,21 +53,28 @@ export async function createSession(params: CreateSessionInput) {
 export async function getSessionByRoomCode(
   roomCode: string,
 ): Promise<ResponseSession | null> {
-  const session = await prisma.session.findFirst({
-    where: {
-      roomCode,
-      isActive: true,
-    },
-  });
+  try {
+    if (!roomCode) return null;
 
-  if (!session) {
-    return null;
+    const session = await prisma.session.findFirst({
+      where: {
+        roomCode,
+        isActive: true,
+      },
+    });
+
+    if (!session) {
+      return null;
+    }
+
+    return {
+      ...session,
+      amountPerGame: Number(session.amountPerGame) ?? 0,
+    };
+  } catch (error) {
+    console.error("Error getting session by room code:", error);
+    throw error;
   }
-
-  return {
-    ...session,
-    amountPerGame: Number(session.amountPerGame) ?? 0,
-  };
 }
 
 export async function patchSession(params: {
