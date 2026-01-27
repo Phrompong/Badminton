@@ -12,6 +12,9 @@ import {
   removeCourt,
 } from "@/app/actions/court";
 import { checkPlayerInActiveCourt } from "@/app/actions/transactionRandom";
+import Footer from "../footer";
+import Title from "../title";
+import { Settings } from "lucide-react";
 interface ISettingModalProps {
   open?: boolean;
   onCancel?: () => void;
@@ -24,24 +27,6 @@ const title = () => {
       <span className="text-xs text-gray-600">
         จัดการการตั้งค่าและข้อมูลของระบบ
       </span>
-    </div>
-  );
-};
-
-const footer = (form: FormInstance) => {
-  return (
-    <div className="flex gap-2">
-      <button className="border border-1 p-1 rounded-md w-full border-gray-400 hover:bg-gray-100">
-        ยกเลิก
-      </button>
-      <button
-        onClick={() => {
-          form.submit();
-        }}
-        className="border border-1 p-1 rounded-md w-full bg-[#00986E] text-white hover:bg-[#007a53]"
-      >
-        บันทึกการตั้งค่า
-      </button>
     </div>
   );
 };
@@ -173,10 +158,17 @@ const SettingModal: FC<ISettingModalProps> = ({ open = false, onCancel }) => {
 
   return (
     <Modal
-      title={title()}
+      title={<Title icon={<Settings />} text="ตั้งค่า" />}
       open={open}
       onCancel={onCancel}
-      footer={footer(form)}
+      footer={
+        <Footer
+          text="บันทึกการตั้งค่า"
+          isCancel={true}
+          handleClickSubmit={form.submit}
+          handleClickCancel={onCancel}
+        />
+      }
       className="overflow-y-auto"
     >
       <Form form={form} layout="vertical" onFinish={handleSubmitForm}>
