@@ -1,25 +1,29 @@
 import { updateIsPaidStatus } from "@/app/actions/player";
 import { getPlayerCountInSession } from "@/app/actions/transactionRandom";
-import { Divider, message, Modal } from "antd";
-import React, { useEffect } from "react";
+import { message, Modal } from "antd";
+import React, { FC, useEffect } from "react";
+import Title from "../title";
+import { CreditCard } from "lucide-react";
 
-const title = () => {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="text-xl">Payment Summary</span>
-      <span className="text-xs">สรุปค่าใช้จ่าย</span>
-    </div>
-  );
-};
+interface IFooterProps {
+  handleConfirmPayment: () => void;
+  isPaid: boolean;
+}
 
-const footer = (handleConfirmPayment: () => void) => {
+const Footer: FC<IFooterProps> = ({ handleConfirmPayment, isPaid }) => {
   return (
     <div className="flex justify-center">
       <button
         onClick={handleConfirmPayment}
-        className="bg-[#00A63D] p-2 rounded-md hover:opacity-80 cursor-pointer"
+        className={
+          isPaid
+            ? "bg-red-600 p-2 rounded-md hover:opacity-80 cursor-pointer"
+            : "bg-[#00A63D] p-2 rounded-md hover:opacity-80 cursor-pointer"
+        }
       >
-        <span className="text-white">ยืนยันการชำระ</span>
+        <span className="text-white">
+          {isPaid ? "ยกเลิกการชำระ" : "ยืนยันการชำระ"}
+        </span>
       </button>
     </div>
   );
@@ -52,45 +56,71 @@ const PaymentModal: React.FC<IPaymentModalProps> = ({
   if (!playerInformation) return null;
 
   const handleConfirmPayment = async () => {
-    await updateIsPaidStatus(playerId, true);
+    await updateIsPaidStatus(
+      playerId,
+      !playerInformation?.playerInformation?.isPaid,
+    );
 
-    message.success("ชำระเงินเรียบร้อย");
+    message.success(
+      playerInformation?.playerInformation?.isPaid
+        ? "ยกเลิกการชำระเงินเรียบร้อย"
+        : "ชำระเงินเรียบร้อย",
+    );
 
     onCancel();
   };
 
+  if (!playerInformation) return null;
+
   return (
     <Modal
-      title={title()}
+      title={<Title icon={<CreditCard />} text="สรุปค่าใช้จ่าย" />}
       open={open}
       onCancel={onCancel}
-      footer={footer(handleConfirmPayment)}
+      footer={
+        <Footer
+          handleConfirmPayment={handleConfirmPayment}
+          isPaid={playerInformation?.playerInformation?.isPaid}
+        />
+      }
     >
       <div className="mt-6 flex flex-col gap-2">
         <div className="flex justify-between">
           <div className="flex flex-col gap-1">
-            <span className="text-lg font-bold">
+            <span className="text-xl font-bold">
               {playerInformation?.playerInformation?.name}
             </span>
-            <span>{playerInformation?.playerInformation?.level}</span>
+          </div>
+          <div>
+            {playerInformation?.playerInformation?.isPaid === true ? (
+              <span className="border border-1 w-auto rounded-md p-1 bg-green-100 text-green-700 border-green-200">
+                ชำระแล้ว
+              </span>
+            ) : (
+              <span className="border border-1 w-auto rounded-md p-1 bg-orange-100 text-orange-700 border-orange-200">
+                รอชำระ
+              </span>
+            )}
           </div>
         </div>
 
-        <Divider style={{ borderColor: "#94a3b8" }} />
+        <div className="border border-gray-100"></div>
 
-        <div className="border border-[#D4F9E7] p-2 rounded-md flex flex-col gap-2 bg-[#EBFDF5]">
-          <span className="font-bold text-md text-[#004E3B]">
+        <div className="border border-[#D4F9E7] p-2 rounded-md flex flex-col gap-4 bg-[#EBFDF5]">
+          <span className="font-bold text-lg text-[#004E3B]">
             รายละเอียดค่าใช้จ่าย
           </span>
 
           <div className="flex justify-between">
-            <span>จำนวนเกมที่เล่น</span>
-            <span>{playerInformation?.countTransaction} เกม</span>
+            <span className="text-lg">จำนวนเกมที่เล่น</span>
+            <span className="text-lg">
+              {playerInformation?.countTransaction} เกม
+            </span>
           </div>
 
           <div className="flex justify-between">
-            <span>ค่าเล่นต่อเกม</span>
-            <span>100 บาท</span>
+            <span className="text-lg">ค่าเล่นต่อเกม</span>
+            <span className="text-lg">100 บาท</span>
           </div>
         </div>
 

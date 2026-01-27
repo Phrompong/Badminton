@@ -20,17 +20,6 @@ interface ISettingModalProps {
   onCancel?: () => void;
 }
 
-const title = () => {
-  return (
-    <div className="flex flex-col gap-2">
-      <span className="text-2xl font-semibold text-gray-900">Settings</span>
-      <span className="text-xs text-gray-600">
-        จัดการการตั้งค่าและข้อมูลของระบบ
-      </span>
-    </div>
-  );
-};
-
 const formItemStyle = { marginBottom: 8 };
 
 const SettingModal: FC<ISettingModalProps> = ({ open = false, onCancel }) => {
