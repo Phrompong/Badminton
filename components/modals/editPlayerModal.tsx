@@ -1,47 +1,14 @@
 import { getPlayerById, updatePlayerName } from "@/app/actions/player";
-import { Form, FormInstance, message, Modal } from "antd";
+import { Form, message, Modal } from "antd";
 import { FC, useEffect, useState } from "react";
+import Title from "../title";
+import Footer from "../footer";
 
 interface IEditPlayerModalProps {
   playerId: string;
   open: boolean;
   onCancel: () => void;
 }
-
-const title = () => {
-  return (
-    <div className="flex flex-col gap-2">
-      <span className="text-xl">Edit Player</span>
-      <span className="text-xs">แก้ไขข้อมูลผู้เล่น </span>
-    </div>
-  );
-};
-
-interface IFooterProps {
-  form: FormInstance<any>;
-  onCancel?: () => void;
-}
-
-const Footer: FC<IFooterProps> = ({ form, onCancel }) => {
-  return (
-    <div className="flex gap-2 w-full mt-6">
-      <button
-        onClick={onCancel}
-        className="w-full border border-[#5EEAB4] rounded-md cursor-pointer p-2 hover:bg-[#EBFDF5]"
-      >
-        <span className="text-[#007A55]">ยกเลิก</span>
-      </button>
-      <button
-        onClick={() => {
-          form.submit();
-        }}
-        className="w-full  rounded-md cursor-pointer p-2 bg-[#009B60] hover:bg-[#007a53]"
-      >
-        <span className="text-white">บันทึก</span>
-      </button>
-    </div>
-  );
-};
 
 const formItemStyle = { marginBottom: 12 };
 
@@ -74,21 +41,31 @@ const EditPlayerModal: FC<IEditPlayerModalProps> = ({
 
   return (
     <Modal
-      title={title()}
+      title={<Title text="แก้ไขข้อมูลผู้เล่น" />}
       open={open}
       onCancel={onCancel}
-      footer={<Footer form={form} onCancel={onCancel} />}
+      width={400}
+      footer={
+        <Footer
+          text="บันททึก"
+          isCancel={true}
+          handleClickSubmit={() => {
+            form.submit();
+          }}
+          handleClickCancel={onCancel}
+        />
+      }
     >
       <div className="mt-4">
         <Form
           form={form}
-          layout="vertical"
+          layout="horizontal"
           initialValues={{
             name: playerInformation?.name || "",
           }}
           onFinish={handleOnFinish}
         >
-          <Form.Item label="ชื่อ" name="name" style={formItemStyle}>
+          <Form.Item label="" name="name" style={formItemStyle}>
             <input
               type="text"
               className="w-full border border-gray-300 p-2 rounded-md"
