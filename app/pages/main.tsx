@@ -96,8 +96,23 @@ const Main: FC<IMainProps> = ({ refresh }) => {
     playerId: string,
     isOnline: boolean,
   ) => {
-    await updateOnlineStatus(playerId, isOnline);
-    setRefreshTicket((prev) => prev + 1);
+    // 1. Update UI ทันที (ไม่ต้องรอ)
+    setPlayersData((prev) =>
+      prev.map((p) => (p.id === playerId ? { ...p, isOnline } : p)),
+    );
+
+    try {
+      // 2. เรียก API ในพื้นหลัง
+      await updateOnlineStatus(playerId, isOnline);
+    } catch (error) {
+      console.error("Failed to update:", error);
+      message.error("Failed to update status");
+      // 3. Rollback ถ้า error (ดึงข้อมูลจริงมาใหม่)
+      if (code) {
+        const players = await getPlayersBySessionId(sessionData!.id);
+        setPlayersData(players);
+      }
+    }
   };
 
   const handleClickPayment = (playerId: string) => {
