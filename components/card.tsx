@@ -19,7 +19,7 @@ export const Card: React.FC<ICardProps> = ({
       )}
     >
       <span className="text-white font-bold">{title}</span>
-      <span className="text-xl font-semibold">{total}</span>
+      <span className="text-white text-xl font-semibold">{total}</span>
     </div>
   );
 };

@@ -217,6 +217,7 @@ const Main: FC<IMainProps> = ({ refresh }) => {
           <TableMobile
             data={playersData}
             className="block lg:hidden"
+            handleUpdateOnlineStatus={handleUpdateOnlineStatus}
             handleClickPayment={handleClickPayment}
             handleClickEditPlayer={handleClickEditPlayer}
           />

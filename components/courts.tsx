@@ -91,7 +91,26 @@ const Courts: FC<ICourtsProps> = ({
             </div>
           );
         })}
-      {isEdit && <Button onClick={() => handleAddCourt?.()}>เพิ่มสนาม</Button>}
+      <button
+        type="button"
+        onClick={() => handleAddCourt?.()}
+        className="cursor-pointer group relative px-3 p-2 rounded-xl font-semibold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden"
+      >
+        <svg
+          className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform duration-300"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.5}
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+        <span className="relative z-10">เพิ่มสนาม</span>
+      </button>
     </div>
   );
 };
