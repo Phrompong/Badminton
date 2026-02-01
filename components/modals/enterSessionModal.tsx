@@ -1,4 +1,4 @@
-import { Divider, Form, FormInstance, Input, Modal } from "antd";
+import { Form, Input, Modal } from "antd";
 import { FC } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Footer from "../footer";
@@ -35,6 +35,7 @@ const EnterSessionModal: FC<IEnterSessionModalProps> = ({ open, onCancel }) => {
       }
       centered
       width={400}
+      maskClosable={false}
     >
       <Form form={form} layout="horizontal" onFinish={handleSubmitForm}>
         <Form.Item<string>

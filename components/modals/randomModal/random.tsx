@@ -3,7 +3,6 @@ import {
   getAllOnlinePlayers,
   updatePlayStatus,
 } from "@/app/actions/player";
-import { getSessionByRoomCode } from "@/app/actions/session";
 import {
   createTransactionRandom,
   getTransactionByTransactionId,
@@ -11,10 +10,9 @@ import {
   updateEndGameTransactionRandom,
   updateTransactionRandom,
 } from "@/app/actions/transactionRandom";
-import { CloseOutlined, DownOutlined } from "@ant-design/icons";
-import { Divider, Dropdown, MenuProps, Space } from "antd";
+import { Divider, Dropdown, Skeleton } from "antd";
 import dayjs from "dayjs";
-import _, { now } from "lodash";
+import _ from "lodash";
 import { useSearchParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import ConfirmModal from "../confirmModal";
@@ -24,53 +22,6 @@ import { getCourtAvailable, patchUnavailableCourt } from "@/app/actions/court";
 interface IRandom {
   session: any;
 }
-
-const items: MenuProps["items"] = [
-  {
-    key: "1",
-    label: (
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.antgroup.com"
-      >
-        1st menu item
-      </a>
-    ),
-  },
-  {
-    key: "2",
-    label: (
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.aliyun.com"
-      >
-        2nd menu item (disabled)
-      </a>
-    ),
-    // icon: <SmileOutlined />,
-    disabled: true,
-  },
-  {
-    key: "3",
-    label: (
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.luohanacademy.com"
-      >
-        3rd menu item (disabled)
-      </a>
-    ),
-    disabled: true,
-  },
-  {
-    key: "4",
-    danger: true,
-    label: "a danger item",
-  },
-];
 
 const Random: FC<IRandom> = ({ session }) => {
   const [dataItems, setDataItems] = useState<any[]>([]);
@@ -136,105 +87,141 @@ const Random: FC<IRandom> = ({ session }) => {
   };
 
   const handleClickShuffle = async (court: string) => {
-    const playerOnline = await getAllOnlineAndPlaying(session.id);
+    try {
+      const playerOnline = await getAllOnlineAndPlaying(session.id);
 
-    if (playerOnline.length === 0) return;
-
-    // * Logic การสุ่มทีม
-    const playerOnCourtOther = dataItems.find((item) => item.court !== court);
-
-    // * สุ่มผู้เล่น 4 คนจาก playerOnline โดยที่เวลา playingSince ไม่เกิน 1 นาที
-    const _playerOnline = playerOnline.filter((p) => {
-      if (!p.playingSince) return true;
-      const now = dayjs();
-      const diffMinute = now.diff(dayjs(p.playingSince), "minute");
-
-      return diffMinute <= 1;
-    });
-
-    if (_playerOnline.length < 4) {
-      alert("ไม่มีผู้เล่นเพียงพอสำหรับการสุ่มใหม่ ");
-      return;
-    }
-
-    // * จะไม่เอาผู้เล่นจาก court อื่น มาร่วมในการสุ่ม
-    if (playerOnCourtOther) {
-      for (const p of playerOnCourtOther.teamA) {
-        _.remove(_playerOnline, (po) => po.id === p.id);
+      if (!playerOnline || playerOnline.length === 0) {
+        alert("ไม่มีผู้เล่น online");
+        return;
       }
-      for (const p of playerOnCourtOther.teamB) {
-        _.remove(_playerOnline, (po) => po.id === p.id);
-      }
-    }
 
-    const shuffledPlayers = _.sampleSize(_playerOnline, 4);
+      // * Logic การสุ่มทีม
+      const playerOnCourtOther = dataItems.find((item) => item.court !== court);
 
-    // * Update tranaction random
-    const transactionToUpdate = dataItems.find((item) => item.court === court);
+      // * สุ่มผู้เล่น 4 คนจาก playerOnline โดยที่เวลา playingSince ไม่เกิน 1 นาที
+      const _playerOnline = playerOnline.filter((p) => {
+        if (!p.playingSince) return true;
+        const now = dayjs();
+        const diffMinute = now.diff(dayjs(p.playingSince), "minute");
 
-    if (!transactionToUpdate) return;
-
-    const nowTransaction = await getTransactionByTransactionId(
-      transactionToUpdate.transactionRandomId,
-    );
-
-    if (!nowTransaction) return;
-
-    const upsertData = {
-      sessionId: session.id,
-      playerId_A1: shuffledPlayers[0].id,
-      playerId_A2: shuffledPlayers[1].id,
-      playerId_B3: shuffledPlayers[2].id,
-      playerId_B4: shuffledPlayers[3].id,
-      courtId: nowTransaction.courtId,
-      updatedDate: new Date(),
-      updatedBy: "00000000-0000-0000-0000-000000000000",
-    };
-
-    let insertId = "";
-
-    if (nowTransaction.isEndGame) {
-      insertId = uuidv4();
-      await createTransactionRandom([
-        {
-          ...upsertData,
-          id: insertId,
-          createdBy: "00000000-0000-0000-0000-000000000000",
-          createdDate: new Date(),
-        },
-      ]);
-
-      await updateTransactionRandom(transactionToUpdate.transactionRandomId, {
-        ...upsertData,
-        isTemp: true,
+        return diffMinute <= 1;
       });
-    } else {
-      await updateTransactionRandom(
-        transactionToUpdate.transactionRandomId,
-        upsertData,
-      );
-    }
 
-    setDataItems((prevDataItems) => {
-      const newDataItems = prevDataItems.map((item) => {
-        if (item.court === court) {
-          return {
-            ...item,
-            transactionRandomId: insertId || item.transactionRandomId,
-            teamA: [
-              { id: shuffledPlayers[0].id, name: shuffledPlayers[0].name },
-              { id: shuffledPlayers[1].id, name: shuffledPlayers[1].name },
-            ],
-            teamB: [
-              { id: shuffledPlayers[2].id, name: shuffledPlayers[2].name },
-              { id: shuffledPlayers[3].id, name: shuffledPlayers[3].name },
-            ],
-          };
+      if (_playerOnline.length < 4) {
+        alert("ไม่มีผู้เล่นเพียงพอสำหรับการสุ่มใหม่");
+        return;
+      }
+
+      // * จะไม่เอาผู้เล่นจาก court อื่น มาร่วมในการสุ่ม
+      if (playerOnCourtOther) {
+        for (const p of playerOnCourtOther.teamA) {
+          _.remove(_playerOnline, (po) => po && po.id === p.id);
         }
-        return item;
+        for (const p of playerOnCourtOther.teamB) {
+          _.remove(_playerOnline, (po) => po && po.id === p.id);
+        }
+      }
+
+      // เช็คอีกครั้งหลังจาก remove
+      if (_playerOnline.length < 4) {
+        alert(
+          "ไม่มีผู้เล่นเพียงพอสำหรับการสุ่มใหม่ (หลังตัดผู้เล่นที่กำลังเล่นอยู่)",
+        );
+        return;
+      }
+
+      const shuffledPlayers = _.sampleSize(_playerOnline, 4);
+
+      // เช็คว่า shuffledPlayers ครบและมี id
+      if (
+        !shuffledPlayers ||
+        shuffledPlayers.length !== 4 ||
+        shuffledPlayers.some((p) => !p || !p.id || !p.name)
+      ) {
+        console.error("Invalid shuffledPlayers:", shuffledPlayers);
+        alert("เกิดข้อผิดพลาดในการสุ่มผู้เล่น กรุณาลองใหม่อีกครั้ง");
+        return;
+      }
+
+      // * Update tranaction random
+      const transactionToUpdate = dataItems.find(
+        (item) => item.court === court,
+      );
+
+      if (!transactionToUpdate) {
+        alert("ไม่พบข้อมูลสนาม");
+        return;
+      }
+
+      const nowTransaction = await getTransactionByTransactionId(
+        transactionToUpdate.transactionRandomId,
+      );
+
+      if (!nowTransaction) {
+        alert("ไม่พบข้อมูล transaction");
+        return;
+      }
+
+      const upsertData = {
+        sessionId: session.id,
+        playerId_A1: shuffledPlayers[0].id,
+        playerId_A2: shuffledPlayers[1].id,
+        playerId_B3: shuffledPlayers[2].id,
+        playerId_B4: shuffledPlayers[3].id,
+        courtId: nowTransaction.courtId,
+        updatedDate: new Date(),
+        updatedBy: "00000000-0000-0000-0000-000000000000",
+      };
+
+      let insertId = "";
+
+      if (nowTransaction.isEndGame) {
+        insertId = uuidv4();
+        await createTransactionRandom([
+          {
+            ...upsertData,
+            id: insertId,
+            createdBy: "00000000-0000-0000-0000-000000000000",
+            createdDate: new Date(),
+          },
+        ]);
+
+        await updateTransactionRandom(transactionToUpdate.transactionRandomId, {
+          ...upsertData,
+          isTemp: true,
+        });
+      } else {
+        await updateTransactionRandom(
+          transactionToUpdate.transactionRandomId,
+          upsertData,
+        );
+      }
+
+      // Update UI
+      setDataItems((prevDataItems) => {
+        const newDataItems = prevDataItems.map((item) => {
+          if (item.court === court) {
+            return {
+              ...item,
+              transactionRandomId: insertId || item.transactionRandomId,
+              teamA: [
+                { id: shuffledPlayers[0].id, name: shuffledPlayers[0].name },
+                { id: shuffledPlayers[1].id, name: shuffledPlayers[1].name },
+              ],
+              teamB: [
+                { id: shuffledPlayers[2].id, name: shuffledPlayers[2].name },
+                { id: shuffledPlayers[3].id, name: shuffledPlayers[3].name },
+              ],
+            };
+          }
+          return item;
+        });
+        return newDataItems;
       });
-      return newDataItems;
-    });
+    } catch (error) {
+      console.error("Error in handleClickShuffle:", error);
+      alert("เกิดข้อผิดพลาดในการสุ่มทีม กรุณาลองใหม่อีกครั้ง");
+    }
   };
 
   const handleClickEndGame = async (transactionRandomId: string) => {
@@ -253,28 +240,30 @@ const Random: FC<IRandom> = ({ session }) => {
       if (dataItems.length === 0) return;
 
       for (const itemRandom of dataItems) {
-        if (itemRandom.courtId) {
-          const bodyTransactionRandom = {
-            sessionId: session!.id,
-            courtId: itemRandom.courtId,
-            createdDate: new Date(),
-            createdBy: "00000000-0000-0000-0000-000000000000",
-            updatedDate: new Date(),
-            updatedBy: "00000000-0000-0000-0000-000000000000",
-            playerId_A1: itemRandom.teamA[0].id,
-            playerId_A2: itemRandom.teamA[1].id,
-            playerId_B3: itemRandom.teamB[0].id,
-            playerId_B4: itemRandom.teamB[1].id,
-          };
+        if (itemRandom.courtId && !itemRandom.transactionRandomId) {
+          if (itemRandom.courtId) {
+            const bodyTransactionRandom = {
+              sessionId: session!.id,
+              courtId: itemRandom.courtId,
+              createdDate: new Date(),
+              createdBy: "00000000-0000-0000-0000-000000000000",
+              updatedDate: new Date(),
+              updatedBy: "00000000-0000-0000-0000-000000000000",
+              playerId_A1: itemRandom.teamA[0].id,
+              playerId_A2: itemRandom.teamA[1].id,
+              playerId_B3: itemRandom.teamB[0].id,
+              playerId_B4: itemRandom.teamB[1].id,
+            };
 
-          await createTransactionRandom([bodyTransactionRandom]);
+            await createTransactionRandom([bodyTransactionRandom]);
 
-          await patchUnavailableCourt(itemRandom.courtId);
+            await patchUnavailableCourt(itemRandom.courtId);
 
-          await updatePlayStatus(itemRandom.teamA[0].id, true);
-          await updatePlayStatus(itemRandom.teamA[1].id, true);
-          await updatePlayStatus(itemRandom.teamB[0].id, true);
-          await updatePlayStatus(itemRandom.teamB[1].id, true);
+            await updatePlayStatus(itemRandom.teamA[0].id, true);
+            await updatePlayStatus(itemRandom.teamA[1].id, true);
+            await updatePlayStatus(itemRandom.teamB[0].id, true);
+            await updatePlayStatus(itemRandom.teamB[1].id, true);
+          }
         }
       }
     };
@@ -314,13 +303,17 @@ const Random: FC<IRandom> = ({ session }) => {
   const handleClickNewCourt = async () => {
     const playerReady = await getAllOnlinePlayers(session.id);
 
-    console.log("playerReady :", playerReady);
-    if (playerReady.length === 0 || playerReady.length < 4) return;
+    if (playerReady.length === 0 || playerReady.length < 4) {
+      alert("ไม่มีผู้เล่นเพียงพอสำหรับการสร้างสนามใหม่");
+      return;
+    }
 
     const courtAvailable = await getCourtAvailable(roomCode);
 
-    console.log("courtAvailable :", courtAvailable);
-    if (!courtAvailable || courtAvailable.length === 0) return;
+    if (!courtAvailable || courtAvailable.length === 0) {
+      alert("ไม่มีสนามว่างสำหรับการสร้างสนามใหม่");
+      return;
+    }
 
     await random(playerReady, courtAvailable);
   };
@@ -330,12 +323,37 @@ const Random: FC<IRandom> = ({ session }) => {
       <div className="flex flex-col mt-12 gap-2">
         <div className="flex justify-end">
           <button
-            className="border border-1 px-4 py-2 rounded-md w-auto w-32 cursor-pointer bg-green-100 border-green-300 hover:bg-green-200 hover:border-green-400"
+            className="cursor-pointer px-6 py-3 rounded-xl font-semibold text-emerald-700 bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 hover:border-emerald-400 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2"
             onClick={() => handleClickNewCourt()}
           >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
             Reload
           </button>
         </div>
+        {dataItems.length === 0 && (
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="border border-gray-200 rounded-md p-4 shadow-md"
+              >
+                <Skeleton active paragraph={{ rows: 4 }} />
+              </div>
+            ))}
+          </div>
+        )}
         {dataItems.map(({ transactionRandomId, court, teamA, teamB }) => (
           <div
             key={court}

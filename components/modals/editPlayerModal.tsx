@@ -55,6 +55,7 @@ const EditPlayerModal: FC<IEditPlayerModalProps> = ({
           handleClickCancel={onCancel}
         />
       }
+      maskClosable={false}
     >
       <div className="mt-4">
         <Form

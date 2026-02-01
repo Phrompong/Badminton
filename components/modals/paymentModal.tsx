@@ -83,6 +83,7 @@ const PaymentModal: React.FC<IPaymentModalProps> = ({
           isPaid={playerInformation?.playerInformation?.isPaid}
         />
       }
+      maskClosable={false}
     >
       <div className="mt-6 flex flex-col gap-2">
         <div className="flex justify-between">

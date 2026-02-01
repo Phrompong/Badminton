@@ -1,7 +1,7 @@
 "use client";
 
 import { getSessionByRoomCode, patchSession } from "@/app/actions/session";
-import { Form, FormInstance, Input, message, Modal } from "antd";
+import { Form, Input, message, Modal } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import Courts from "../courts";
@@ -159,6 +159,7 @@ const SettingModal: FC<ISettingModalProps> = ({ open = false, onCancel }) => {
         />
       }
       className="overflow-y-auto"
+      maskClosable={false}
     >
       <Form form={form} layout="vertical" onFinish={handleSubmitForm}>
         <div className="flex flex-col gap-4 mt-6">

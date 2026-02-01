@@ -15,7 +15,12 @@ const ConfirmModal: FC<IConfirmModal> = ({
   isOpenModal = false,
 }) => {
   return (
-    <Modal open={isOpenModal} onOk={handleConfirm} onCancel={handleCancel}>
+    <Modal
+      open={isOpenModal}
+      onOk={handleConfirm}
+      onCancel={handleCancel}
+      maskClosable={false}
+    >
       {children}
     </Modal>
   );

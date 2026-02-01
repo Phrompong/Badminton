@@ -95,6 +95,7 @@ const SessionModal = ({ open, onCancel }: ISessionModalProps) => {
           handleClickCancel={onCancel}
         />
       }
+      maskClosable={false}
     >
       <Form form={form} layout="vertical" onFinish={handleSubmitForm}>
         <div className="flex flex-col gap-4">

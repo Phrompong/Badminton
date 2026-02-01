@@ -133,6 +133,7 @@ export const ImportPlayerModal: FC<IImportPlayerModalProps> = ({
           handleClickCancel={() => setPlayers("")}
         />
       }
+      maskClosable={false}
     >
       <div className="flex flex-col gap-4">
         <div className="flex flex-col border border-blue-300 bg-blue-50 p-4 rounded-md  ">

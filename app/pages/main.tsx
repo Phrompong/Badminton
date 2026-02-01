@@ -1,5 +1,4 @@
 "use client";
-import { TextInput } from "@/components/textInput";
 import { Copy, Users } from "lucide-react";
 import Card from "@/components/card";
 import { getSessionByRoomCode } from "../actions/session";
@@ -153,7 +152,6 @@ const Main: FC<IMainProps> = ({ refresh }) => {
   }, [
     code,
     refresh,
-    refreshTicket,
     isPaymentModalOpen,
     isEditPlayerModalOpen,
     isRemovePlayerModalOpen,

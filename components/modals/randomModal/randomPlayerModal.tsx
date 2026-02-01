@@ -7,7 +7,6 @@ import {
 import { Modal } from "antd";
 import { useSearchParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
-import { motion } from "motion/react";
 import NotYetRandom from "./notYetRandom";
 import Random from "./random";
 import {
