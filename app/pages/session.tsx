@@ -46,10 +46,12 @@ const Session = () => {
         </div>
       </div>
 
-      <SessionModal
-        open={isSessionModalOpen}
-        onCancel={() => setIsSessionModalOpen(false)}
-      />
+      {isSessionModalOpen && (
+        <SessionModal
+          open={isSessionModalOpen}
+          onCancel={() => setIsSessionModalOpen(false)}
+        />
+      )}
 
       <EnterSessionModal
         open={isEnterSessionModalOpen}
