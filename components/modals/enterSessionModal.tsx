@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Footer from "../footer";
 import Title from "../title";
 import { KeyRound } from "lucide-react";
+import { ModalCustom } from "./modal";
 
 interface IEnterSessionModalProps {
   open: boolean;
@@ -34,28 +35,29 @@ const EnterSessionModal: FC<IEnterSessionModalProps> = ({ open, onCancel }) => {
   );
 
   return (
-    <Modal
-      title={
-        <Title text="เข้าสู่เซสชัน" icon={<KeyRound className="w-5 h-5" />} />
-      }
+    <ModalCustom
+      titleHeader="เข้าสู่เซสชัน"
+      iconHeader={<KeyRound className="w-5 h-5" />}
       open={open}
-      onCancel={onCancel}
-      footer={
+      footerCustom={
         <Footer text="เข้าสู่เซสชัน" handleClickSubmit={() => form.submit()} />
       }
-      centered
       width={400}
+      onCancel={onCancel}
     >
-      <Form form={form} layout="horizontal" onFinish={handleSubmitForm}>
+      <Form form={form} onFinish={handleSubmitForm}>
         <Form.Item<string>
           label=""
           name="sessionKey"
+          style={{
+            marginBottom: 0,
+          }}
           rules={[{ required: true, message: "กรุณากรอกชื่อเซสชัน" }]}
         >
           <Input className="w-full h-14" placeholder="กรุณากรอกชื่อเซสชัน" />
         </Form.Item>
       </Form>
-    </Modal>
+    </ModalCustom>
   );
 };
 
