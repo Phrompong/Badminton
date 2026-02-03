@@ -1,5 +1,5 @@
 import { Form, Input, Modal } from "antd";
-import { FC, useEffect } from "react";
+import { FC, useEffect, memo, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Footer from "../footer";
 import Title from "../title";
@@ -21,13 +21,16 @@ const EnterSessionModal: FC<IEnterSessionModalProps> = ({ open, onCancel }) => {
     }
   }, [open, form]);
 
-  const handleSubmitForm = (values: any) => {
-    const params = new URLSearchParams(searchParams.toString());
+  const handleSubmitForm = useCallback(
+    (values: any) => {
+      const params = new URLSearchParams(searchParams.toString());
 
-    params.set("code", values.sessionKey);
-    router.replace(`?${params.toString()}`);
-    onCancel?.();
-  };
+      params.set("code", values.sessionKey);
+      router.replace(`?${params.toString()}`);
+      onCancel?.();
+    },
+    [searchParams, router, onCancel],
+  );
 
   return (
     <Modal
@@ -42,6 +45,8 @@ const EnterSessionModal: FC<IEnterSessionModalProps> = ({ open, onCancel }) => {
       centered
       width={400}
       maskClosable={false}
+      destroyOnClose={false}
+      forceRender={true}
     >
       <Form form={form} layout="horizontal" onFinish={handleSubmitForm}>
         <Form.Item<string>
@@ -56,4 +61,4 @@ const EnterSessionModal: FC<IEnterSessionModalProps> = ({ open, onCancel }) => {
   );
 };
 
-export default EnterSessionModal;
+export default memo(EnterSessionModal);

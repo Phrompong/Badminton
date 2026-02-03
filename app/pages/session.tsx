@@ -1,10 +1,7 @@
+import EnterSessionModal from "@/components/modals/enterSessionModal";
+import SessionModal from "@/components/modals/sessionFormModal";
 import { KeyRound, Plus, Sparkles } from "lucide-react";
-import { lazy, Suspense, useState } from "react";
-
-const SessionModal = lazy(() => import("@/components/modals/sessionFormModal"));
-const EnterSessionModal = lazy(
-  () => import("@/components/modals/enterSessionModal"),
-);
+import { startTransition, useState } from "react";
 
 const Session = () => {
   const [isSessionModalOpen, setIsSessionModalOpen] = useState<boolean>(false);
@@ -12,11 +9,15 @@ const Session = () => {
     useState<boolean>(false);
 
   const handleClickCreateSession = () => {
-    setIsSessionModalOpen(true);
+    startTransition(() => {
+      setIsSessionModalOpen(true);
+    });
   };
 
   const handleClickEnterSession = () => {
-    setIsEnterSessionModalOpen(true);
+    startTransition(() => {
+      setIsEnterSessionModalOpen(true);
+    });
   };
 
   return (
@@ -34,14 +35,14 @@ const Session = () => {
         <div className="flex gap-4 justify-center ">
           <button
             onClick={handleClickCreateSession}
-            className="w-40 h-20 flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg p-2 gap-2 cursor-pointer hover:from-emerald-600 hover:to-teal-700 shadow-xl transition"
+            className="w-40 h-20 flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg p-2 gap-2 cursor-pointer hover:from-emerald-600 hover:to-teal-700 shadow-xl transition active:scale-95"
           >
             <Plus className="w-5 h-5 text-white" />
             <span className="text-white text-md">สร้างเซสชันใหม่</span>
           </button>
           <button
             onClick={handleClickEnterSession}
-            className="w-40 h-20 flex items-center justify-center p-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition gap-2 cursor-pointer"
+            className="w-40 h-20 flex items-center justify-center p-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition gap-2 cursor-pointer active:scale-95"
           >
             <KeyRound className="w-5 h-5" />
             <span className="text-md">เข้าสู่เซสชันที</span>
@@ -49,21 +50,15 @@ const Session = () => {
         </div>
       </div>
 
-      <Suspense fallback={null}>
-        {isSessionModalOpen && (
-          <SessionModal
-            open={isSessionModalOpen}
-            onCancel={() => setIsSessionModalOpen(false)}
-          />
-        )}
+      <SessionModal
+        open={isSessionModalOpen}
+        onCancel={() => setIsSessionModalOpen(false)}
+      />
 
-        {isEnterSessionModalOpen && (
-          <EnterSessionModal
-            open={isEnterSessionModalOpen}
-            onCancel={() => setIsEnterSessionModalOpen(false)}
-          />
-        )}
-      </Suspense>
+      <EnterSessionModal
+        open={isEnterSessionModalOpen}
+        onCancel={() => setIsEnterSessionModalOpen(false)}
+      />
     </>
   );
 };
