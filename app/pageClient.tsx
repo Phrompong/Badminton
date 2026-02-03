@@ -45,7 +45,7 @@ export default function PageClient() {
 
   return (
     <>
-      <div className="flex flex-col gap-8 bg-gradient-to-br from-indigo-900 via-blue-800 to-teal-700 relative overflow-hidden min-h-screen">
+      <div className="flex flex-col gap-8 bg-gradient-to-br from-indigo-900 via-blue-800 to-teal-700 relative overflow-hidden min-h-screen w-screen">
         {/* Decorative Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {/* Animated Gradient Orbs */}
@@ -111,6 +111,7 @@ export default function PageClient() {
         ) : (
           <></>
         )}
+
         <main>{code ? <Main refresh={refresh} /> : <Session />}</main>
       </div>
 

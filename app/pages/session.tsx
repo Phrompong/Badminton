@@ -28,17 +28,17 @@ const Session = () => {
           สร้างเซสชันเพื่อเริ่มจัดการการเล่นแบดมินตัน
         </span>
 
-        <div className="flex gap-6">
+        <div className="flex gap-4 justify-center ">
           <button
             onClick={handleClickCreateSession}
-            className="flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg p-6 gap-2 w-46 cursor-pointer hover:from-emerald-600 hover:to-teal-700 shadow-xl transition"
+            className="w-40 h-20 flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg p-2 gap-2 cursor-pointer hover:from-emerald-600 hover:to-teal-700 shadow-xl transition"
           >
             <Plus className="w-5 h-5 text-white" />
             <span className="text-white text-md">สร้างเซสชันใหม่</span>
           </button>
           <button
             onClick={handleClickEnterSession}
-            className="flex items-center justify-center px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition w-46 gap-2 cursor-pointer"
+            className="w-40 h-20 flex items-center justify-center p-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition gap-2 cursor-pointer"
           >
             <KeyRound className="w-5 h-5" />
             <span className="text-md">เข้าสู่เซสชันที</span>
